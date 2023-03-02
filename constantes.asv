@@ -16,13 +16,8 @@ delta_c = 1;    % angle du gouvernail de profondeur
 a_prop = 0.5;     %fraction de la poussee maximale des moteurs (0 < a_prop < 1)
 v = 23.4;       %vitesse de lavion
 alpha = 30;     %angle dattaque(entre laxe longitudinal de lavion et la vitesse)
-
-
 teta = 15;      %angle de tangage(entre laxe longitudinal de lavion et le plan horizontal)
-
-q = 45;         %vitesse angulaire en tangage de lavion (q=d(teta)/dt)
-
-gamma = teta - alpha;     %angle de vol de lavion (gamma = teta - alpha) et (gamma > 0:lavion monte, gamma < 0:lavion descend)
+q = 45;         %vitesse angulaire en tangage de lavion (q
 
 
 
