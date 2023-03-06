@@ -74,27 +74,26 @@ Y = [v  alpha   teta    q   gamma]';     %en m/s et en degres
 
 %% DEBUT DE La problematique
 
-%ESSAIE #1
-%syms s
+syms s
 %s=tf('s');
 
-%I = eye(4,4);
 
-%inter = (s.*I)-A;
-%inv_inter = inv(inter);
+I = eye(4,4);
 
-%TF = C*(inv_inter*B);
-
+inter = (s.*I)-A;
+inv_inter = inv(inter);
 
 
+TF = C*(inv_inter*B)
 
-% ESSAIE #2
+
+
 % Compute the transfer function
 [num,den] = ss2tf(A,B,C,D);
 
 % Print the transfer function
 tf = tf(num,den);
-disp(tf)
+disp(tf);
 
 
 
