@@ -90,12 +90,37 @@ Y = [v  alpha   teta    q   gamma]';     %en m/s et en degres
 
 % ESSAIE #2
 % Compute the transfer function
-[num,den] = ss2tf(A,B,C,D);
+%[num,den] = ss2tf(A,B,C,D);
 
 % Print the transfer function
-tf = tf(num,den);
-disp(tf)
+%tf = tf(num,den)
+%disp(tf)
 
+
+
+
+
+
+
+
+
+% ESSAIE #3
+% Calcul des valeurs propres du systeme
+propres = eig(A)
+
+% calcul des carac temporelles
+wn = abs(propres);
+zeta = -real(propres)./wn;
+wa = wn.*sqrt(1-zeta.^2);
+phi = acos(zeta);
+Mp = 100*exp(-pi./tan(phi));
+ts = 4./(zeta.*wn);
+tp = pi./wa;
+
+% affichage des carac temporelles
+disp(["Valeurs propres du systeme:"])
+disp(['tp = ', num2str(tp(end)), ' (secs)'])
+disp(['ts = ', num2str(ts(end)), ' (secs)'])
 
 
 
