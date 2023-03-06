@@ -180,14 +180,8 @@ for i = 1:length(Kv)
     legend
     hold on
 end
-
-
 [num_T,den_T] = tfdata(T)
 [A1,B1,C1,D1] = tf2ss(num_T{1},den_T{1})
-
-
-
-
 
 
 
@@ -203,8 +197,8 @@ val_propres_v_aprop = eig(intermediaire)
 
 
 % calcul des carac temporelles
-wn = abs(val_propres_v_aprop);
-zeta = -real(val_propres_v_aprop)./wn;
+wn = abs(intermediaire);
+zeta = -real(intermediaire)./wn;
 wa = wn.*sqrt(1-zeta.^2);
 phi = acos(zeta);
 Mp = 100*exp(-pi./tan(phi));
@@ -275,10 +269,8 @@ G_simpl = (g0/g1)*TFR
 
 step(G)
 hold on
-
 step(G_simpl)
 hold on
-
 step(v_aprop)
 
 

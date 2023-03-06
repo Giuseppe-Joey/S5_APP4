@@ -108,10 +108,10 @@ z2 = zeros(2);
 z3 = zeros(3);
 
 
-figure('Name', 'Rlocus de V/a_prop')
+figure('Name', 'Rlocus de v/a_prop')
 rlocus(v_aprop)
 
-figure('Name', 'Step de V/a_prop')
+figure('Name', 'Step de v/a_prop')
 step(v_aprop)
 
 
