@@ -166,25 +166,22 @@ disp(['------QUESTION d)------']);
 %step(T)
 
 
-G = TF_a_partir_zeros_poles_v_aprop
-Kv = [0     0.1     0.5     1     25  50  75  100       200     300     500     1000];
-Kv = [0     0.1     0.2     0.3     0.4     0.5     0.6     0.7     0.8     0.9     50000];
+G = v_aprop
+% Kv = [0     0.1     0.5     1     25  50  75  100       200     300     500     1000];
+% Kv = [0     0.1     0.2     0.3     0.4     0.5     0.6     0.7     0.8     0.9     50000];
+Kv = 1.38
 
 figure('Name', 'Kv')
 for i = 1:length(Kv)
     H = tf(Kv(i), 1);
     T = feedback(G*H, 1);
-    step(T)
-    %bode(T), grid
+%     step(T)
+    rlocus(T)
     legend
     hold on
 end
-
-
-
-
-
-
+[num_T,den_T] = tfdata(T)
+[A1,B1,C1,D1] = tf2ss(num_T{1},den_T{1})
 
 
 
@@ -232,21 +229,53 @@ disp(['tp = ', num2str(tp(end)), ' s']);
 
 %% question f)
 disp(['------QUESTION f)------']);
-[Gm, Pm, Wog, wop] = margin(G);
+% 
+
+% Kv = [0     0.1     0.5     1     25  50  75  100       200     300     500     1000];
+% Kv = [0     0.1     0.2     0.3     0.4     0.5     0.6     0.7     0.8     0.9     50000];
+Kv = 1.386
+
+figure('Name', 'Bode')
+for i = 1:length(Kv)  
+    bode(Kv(i)*G), grid
+    margin(Kv(i)*G);
+    hold on
+end
 
 fprintf('Phase margin: %0.2f degrees\n', Pm);
 fprintf('Gain margin: %0.2f dB\n', Gm);
 fprintf('Omega G: %0.2f rad/s\n', Wog);
 fprintf('Omega P: %0.2f rad/s\n', wop);
 
-figure('Name', 'Bode')
-bode(G), grid
+%% question f)
+%trouver les pôles dominant (les pôle qui affect le plus la fonction)
+[R,P,K]=residue(G.numerator{1},G.denominator{1});
+
+%trouver le poid des pôles
+Cdom=abs(R)./abs(real(P))
+ 
+%le poid pole avec la plus grande valeur=plus proche de l'axe imaginaire
+%on veut toujours deux pole... systeme d'ordre 2
+
+%reduction du systeme
+[num,den]=residue(R(3:4),P(3:4),K);
+ 
+TFR=tf(num,den);
+
+g0 = dcgain(G);
+g1 = dcgain(TFR);
+
+G_simpl = (g0/g1)*TFR
+
+step(G)
+hold on
+step(G_simpl)
+hold on
+step(v_aprop)
 
 
 
 
-
-%%
 
 
 
