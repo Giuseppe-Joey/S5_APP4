@@ -106,21 +106,114 @@ Y = [v  alpha   teta    q   gamma]';     %en m/s et en degres
 
 % ESSAIE #3
 % Calcul des valeurs propres du systeme
-propres = eig(A)
+val_propres_A = eig(A)
+
+
+
 
 % calcul des carac temporelles
-wn = abs(propres);
-zeta = -real(propres)./wn;
+wn = abs(val_propres_A);
+zeta = -real(val_propres_A)./wn;
 wa = wn.*sqrt(1-zeta.^2);
 phi = acos(zeta);
 Mp = 100*exp(-pi./tan(phi));
 ts = 4./(zeta.*wn);
 tp = pi./wa;
 
+
+
+
 % affichage des carac temporelles
-disp(["Valeurs propres du systeme:"])
-disp(['tp = ', num2str(tp(end)), ' (secs)'])
-disp(['ts = ', num2str(ts(end)), ' (secs)'])
+disp(["Affichage des carac temporelles:"])
+disp(['wn = ', num2str(wn(end)), ' rad/s']);
+disp(['zeta = ', num2str(zeta(end)), ' unites']);
+disp(['wa = ', num2str(wa(end)), ' rad/s']);
+disp(['phi = ', num2str(phi(end)), ' radian']);
+disp(['Mp = ', num2str(Mp(end)), ' %']);
+disp(['ts = ', num2str(ts(end)), ' s']);
+disp(['tp = ', num2str(tp(end)), ' s']);
+
+
+
+
+
+
+%% FONCTIONS DE TRANSFERT
+% Compute the transfer function
+[num,den] = ss2tf(A,B,C,D,2);   % le 2 signifie quon veut le 2e element de U soit aprop
+v_aprop = tf(num(1, :), den)         % v/aprop
+alpha_aprop = tf(num(2, :), den)         % alpha/aprop
+teta_aprop = tf(num(3, :), den)         % teta / aprop
+q_aprop = tf(num(4, :), den)         % q/aprop
+gamma_aprop = tf(num(5, :), den)         % gamma/aprop
+
+
+numerateur = num(1,:);
+zeros = roots(num(1,:))
+poles = roots(den)
+
+
+p1 = poles(1);
+p2 = poles(2);
+p3 = poles(3);
+p4 = poles(4);
+
+
+z1 = zeros(1);
+z2 = zeros(2);
+z3 = zeros(3);
+
+
+figure(1)
+rlocus(v_aprop)
+
+figure(2)
+step(v_aprop)
+
+
+[num, den] = zp2tf(zeros, poles, 1);
+TF_non_min = tf(num,den)
+
+
+%% section lucas
+% identification de la fonction de transfert à partir des pôles et zéros
+z =zeros;
+p = val_propres_A.';
+%p = poles;
+k = 1;
+sys_zpk = zpk(z, p, k);
+display(sys_zpk)
+
+
+%% FEEDBACK
+
+% EXEMPLE FEEDBACK
+%num = [1 2];
+%den = [1 3 2];
+%G = tf(num, den)
+%Kv = 0.5;
+%H = tf(Kv, 1);
+%T = feedback(G*H, 1);
+%step(T)
+
+
+G = TF_non_min
+Kv = [0     0.1     0.5     1     25  50  75  100       200     300     500     1000];
+Kv = [0     0.1     0.2     0.3     0.4     0.5     0.6     0.7     0.8     0.9     50000];
+
+
+for i = 1:length(Kv)
+    H = tf(Kv(i), 1);
+    T = feedback(G*H, 1);
+    step(T)
+    legend
+    hold on
+end
+
+
+
+
+
 
 
 
