@@ -20,6 +20,38 @@ constantes % call le fichier des constantes
 
 
 
+%% DEBUT DE La problematique
+
+%ESSAIE #1
+%syms s
+%s=tf('s');
+
+%I = eye(4,4);
+
+%inter = (s.*I)-A;
+%inv_inter = inv(inter);
+
+%TF = C*(inv_inter*B);
+
+
+
+
+% ESSAIE #2
+% Compute the transfer function
+%[num,den] = ss2tf(A,B,C,D);
+
+% Print the transfer function
+%tf = tf(num,den)
+%disp(tf)
+
+
+
+
+
+
+
+
+
 %% QUESTION a)
 
 disp(['------QUESTION a)------']);
@@ -133,92 +165,46 @@ disp(['------QUESTION d)------']);
 %T = feedback(G*H, 1);
 %step(T)
 
-
-G = TF_a_partir_zeros_poles_v_aprop
-Kv = [0     0.1     0.5     1     25  50  75  100       200     300     500     1000];
-Kv = [0     0.1     0.2     0.3     0.4     0.5     0.6     0.7     0.8     0.9     50000];
-
-figure('Name', 'Kv')
-for i = 1:length(Kv)
-    H = tf(Kv(i), 1);
-    T = feedback(G*H, 1);
-    step(T)
-    %bode(T), grid
-    legend
-    hold on
-end
-
-
-
-
-
-
-
-
-
-
-
 %% question e)
 disp(['------QUESTION e)------']);
+G = v_aprop
+% Kv = [0     0.1     0.5     1     25  50  75  100       200     300     500     1000];
+% Kv = [0     0.1     0.2     0.3     0.4     0.5     0.6     0.7     0.8     0.9     50000];
+Kv = 1.0262;
 
-% choix de Kv
-% Calcul des valeurs propres du systeme
-Kv = 1.386;
-intermediaire = v_aprop
-val_propres_v_aprop = eig(intermediaire)
+    figure('Name', 'Kv')
+    H = tf(Kv,1);
+    T = feedback(G*H, 1);
+%     step(T)
+    rlocus(T)
+    legend
 
-
-% calcul des carac temporelles
-wn = abs(val_propres_v_aprop);
-zeta = -real(val_propres_v_aprop)./wn;
-wa = wn.*sqrt(1-zeta.^2);
-phi = acos(zeta);
-Mp = 100*exp(-pi./tan(phi));
-ts = 4./(zeta.*wn);
-tp = pi./wa;
-
-
-% affichage des carac temporelles
-disp(["Affichage des carac temporelles:"]);
-disp(['wn = ', num2str(wn(end)), ' rad/s']);
-disp(['zeta = ', num2str(zeta(end)), ' unites']);
-disp(['wa = ', num2str(wa(end)), ' rad/s']);
-disp(['phi = ', num2str(phi(end)), ' radian']);
-disp(['Mp = ', num2str(Mp(end)), ' %']);
-disp(['ts = ', num2str(ts(end)), ' s']);
-disp(['tp = ', num2str(tp(end)), ' s']);
-disp(['']);
-
-
-
-% calcul du nouveau modele n1_d1
-%num = [wn.^2]
-%den = [1  ,     2.*zeta.*wn,       wn.^2]
-
-%n1_d1 = tf(num, den)
+[num_T,den_T] = tfdata(T)
+[A1,B1,C1,D1] = tf2ss(num_T{1},den_T{1})
 
 
 
 
 %% question f)
 disp(['------QUESTION f)------']);
-[Gm, Pm, Wog, wop] = margin(G);
-
-fprintf('Phase margin: %0.2f degrees\n', Pm)
-fprintf('Gain margin: %0.2f dB\n', Gm)
-fprintf('Omega G: %0.2f rad/s\n', Wog)
-fprintf('Omega P: %0.2f rad/s\n', wop)
 
 figure('Name', 'Bode')
-bode(G), grid
+for i = 1:length(Kv)  
+    bode(Kv(i)*G), grid
+    margin(Kv(i)*G);
+    hold on
+end
 
+% fprintf('Phase margin: %0.2f degrees\n', Pm);
+% fprintf('Gain margin: %0.2f dB\n', Gm);
+% fprintf('Omega G: %0.2f rad/s\n', Wog);
+% fprintf('Omega P: %0.2f rad/s\n', wop);
 
+%% question g)
+disp(['------QUESTION g)------']);
 
-
-
-%% question i)
 %trouver les pôles dominant (les pôle qui affect le plus la fonction)
-[R,P,K]=residue(v_aprop.numerator{1},v_aprop.denominator{1});
+[R,P,K]=residue(G.numerator{1},G.denominator{1});
 
 %trouver le poid des pôles
 Cdom=abs(R)./abs(real(P))
@@ -229,8 +215,31 @@ Cdom=abs(R)./abs(real(P))
 %reduction du systeme
 [num,den]=residue(R(3:4),P(3:4),K);
  
+TFR=tf(num,den);
+
+g0 = dcgain(G);
+g1 = dcgain(TFR);
+
+G_simpl = (g0/g1)*TFR
+
+[num_G_simpl,den_G_simpl] = tfdata(G_simpl)
+
+Wn_G_simpl = sqrt(den_G_simpl{1}(3))
+Zeta = (den_G_simpl{1}(2))/(2*Wn_G_simpl)
+
+Kv1 = ((Wn_G_simpl^2)-0.047)/1.465
+Kv2 = ((den_G_simpl{1}(2))-0.028)/2.122
+ 
+figure('Name', 'comparaison avec nouvelle tf')
+step(G)
+hold on
+step(G_simpl)
+
+%% question i)
+disp(['------QUESTION i)------']);
+
 FT_originale = v_aprop
-FT_reduite = tf(num,den)
+FT_reduite = G_simpl
 
 
 figure
@@ -242,5 +251,5 @@ legend
 
 
 
-%% question 
+
 
