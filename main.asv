@@ -18,60 +18,6 @@ constantes % call le fichier des constantes
 
 
 
-
-
-
-
-%% ANNEXE A
-
-% instanciation des matrices 
-A = [   -0.018223   -0.088571  -9.78   0;...
-        -0.003038    -1.2563     0     1;...
-            0            0       0     1;...
-         0.0617       -28.075    0   -4.5937];
-
-
-B = [     0        1.1962;...
-          0       -0.00120;...
-          0           0;...
-          7.84      -4.05];
-
-
-C = [     1        0        0        0;...
-          0       57.296    0        0;...
-          0        0      57.296     0;...
-          0        0        0    57.296;...
-          0      -57.296    57.296   0];
-
-
-D = [   0   0;...
-        0   0;...
-        0   0;...
-        0   0;...
-        0   0];
-
-
-% Variables d'entree
-U = [delta_c   a_prop]' ;     %en degres et en fraction de la poussee maximale
-
-
-% Variables d'etat
-X = [v   alpha   teta   q]';     % en m/s et en radians
-
-
-% Variables de sortie
-Y = [v  alpha   teta    q   gamma]';     %en m/s et en degres
-
-
-
-
-
-
-
-
-
-
-
 %% DEBUT DE La problematique
 
 %ESSAIE #1
@@ -104,12 +50,12 @@ Y = [v  alpha   teta    q   gamma]';     %en m/s et en degres
 
 
 
-% ESSAIE #3
+%% QUESTION a)
+
+disp(['------QUESTION a)------']);
+
 % Calcul des valeurs propres du systeme
 val_propres_A = eig(A)
-
-
-
 
 % calcul des carac temporelles
 wn = abs(val_propres_A);
@@ -120,9 +66,8 @@ Mp = 100*exp(-pi./tan(phi));
 ts = 4./(zeta.*wn);
 tp = pi./wa;
 
-
 % affichage des carac temporelles
-disp(["Affichage des carac temporelles:"])
+disp(["Affichage des carac temporelles:"]);
 disp(['wn = ', num2str(wn(end)), ' rad/s']);
 disp(['zeta = ', num2str(zeta(end)), ' unites']);
 disp(['wa = ', num2str(wa(end)), ' rad/s']);
@@ -136,19 +81,19 @@ disp(['tp = ', num2str(tp(end)), ' s']);
 
 
 
-%% FONCTIONS DE TRANSFERT
-% Compute the transfer function
+%% QUESTION b) - v/a_prop
 [num,den] = ss2tf(A,B,C,D,2);   % le 2 signifie quon veut le 2e element de U soit aprop
 v_aprop = tf(num(1, :), den)         % v/aprop
-alpha_aprop = tf(num(2, :), den)         % alpha/aprop
-teta_aprop = tf(num(3, :), den)         % teta / aprop
-q_aprop = tf(num(4, :), den)         % q/aprop
-gamma_aprop = tf(num(5, :), den)         % gamma/aprop
+alpha_aprop = tf(num(2, :), den);         % alpha/aprop
+teta_aprop = tf(num(3, :), den);         % teta / aprop
+q_aprop = tf(num(4, :), den);         % q/aprop
+gamma_aprop = tf(num(5, :), den);         % gamma/aprop
 
 
 numerateur = num(1,:);
 zeros = roots(num(1,:))
 poles = roots(den)
+
 
 p1 = poles(1);
 p2 = poles(2);
@@ -161,20 +106,20 @@ z2 = zeros(2);
 z3 = zeros(3);
 
 
-figure(1)
+figure('Name', 'Rlocus de V/a_prop')
 rlocus(v_aprop)
 
-figure(2)
+figure('Name', 'Step de V/a_prop')
 step(v_aprop)
 
 
 [num, den] = zp2tf(zeros, poles, 1);
-TF_non_min = tf(num,den)
+TF_a_partir_zeros_poles_v_aprop = tf(num,den)
+ 
 
-
-%% section lucas
+% section lucas
 % identification de la fonction de transfert à partir des pôles et zéros
-z =zeros;
+z = zeros;
 p = val_propres_A.';
 %p = poles;
 k = 1;
@@ -182,7 +127,32 @@ sys_zpk = zpk(z, p, k);
 display(sys_zpk)
 
 
-%% FEEDBACK
+
+
+
+
+%% QUESTION b) - phase non minimale
+disp(['------QUESTION b)------']);
+[num,den] = ss2tf(A,B,C,D,1);   % le 1 signifie quon veut le 1er element de U soit delta_c
+v_delta_c = tf(num(1, :), den)         % v/delta_c
+
+figure('Name', 'V sur Delta_C')
+rlocus(v_delta_c)
+
+figure('Name', 'V sur Delta_C')
+bode(v_delta_c), grid
+
+
+
+
+
+
+
+
+
+
+%% FEEDBACK d)
+disp(['------QUESTION d)------']);
 
 % EXEMPLE FEEDBACK
 %num = [1 2];
@@ -194,8 +164,58 @@ display(sys_zpk)
 %step(T)
 
 
-G = TF_non_min
-Kv = 0.5;
-H = tf(Kv, 1);
-T = feedback(G*H, 1);
-step(T)
+G = TF_a_partir_zeros_poles_v_aprop
+Kv = [0     0.1     0.5     1     25  50  75  100       200     300     500     1000];
+Kv = [0     0.1     0.2     0.3     0.4     0.5     0.6     0.7     0.8     0.9     50000];
+
+figure('Name', 'Kv')
+for i = 1:length(Kv)
+    H = tf(Kv(i), 1);
+    T = feedback(G*H, 1);
+    step(T)
+    %bode(T), grid
+    legend
+    hold on
+end
+
+
+
+
+
+
+
+%% question e)
+disp(['------QUESTION e)------']);
+
+% choix de Kv
+
+
+
+% calcul du nouveau modele n1_d1
+num = [wn.^2]
+den = [1       2.*zeta.*wn       wn.^2]
+
+n1_d1 = tf(num, den)
+
+
+
+
+%% question f)
+disp(['------QUESTION f)------']);
+[Gm, Pm, Wog, wop] = margin(G);
+
+fprintf('Phase margin: %0.2f degrees\n', Pm);
+fprintf('Gain margin: %0.2f dB\n', Gm);
+fprintf('Omega G: %0.2f rad/s\n', Wog);
+fprintf('Omega P: %0.2f rad/s\n', wop);
+
+figure('Name', 'Bode')
+bode(G), grid
+
+
+
+
+
+
+
+
