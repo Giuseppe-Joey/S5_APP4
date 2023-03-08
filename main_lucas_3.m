@@ -167,9 +167,8 @@ disp(['------QUESTION d)------']);
 
 %% question e)
 disp(['------QUESTION e)------']);
+
 G = v_aprop
-% Kv = [0     0.1     0.5     1     25  50  75  100       200     300     500     1000];
-% Kv = [0     0.1     0.2     0.3     0.4     0.5     0.6     0.7     0.8     0.9     50000];
 Kv = 1.0262;
 
     figure('Name', 'Kv')
@@ -263,19 +262,17 @@ legend
 %% question j)
 disp(['------QUESTION j)------']);
 
-% Calcul des valeurs propres du systeme
-%val_propres_A1 = eig(A1)
-
 [num,den] = ss2tf(A1,B1,C1,D1,1);   % le 1 signifie quon veut le 1e element de U (soit delta_c)
 gamma_delta = tf(num(5), den)         % gamma/delta
 
 figure('Name', 'Rlocus de gamma/delta');
 rlocus(gamma_delta);
 
-figure('Name', 'Step de gamma/delta');
-step(gamma_delta);
+% figure('Name', 'Step de gamma/delta');
+% step(gamma_delta);
 
-
+% figure('Name', 'Bode de gamma/delta');
+% bode(gamma_delta);
 
 
 
@@ -319,6 +316,26 @@ disp(['']);
 %% question m)
 disp(['------QUESTION m)------']);
 
+[num,den] = ss2tf(A1,B1,C1,D1,1);   % le 1 signifie quon veut le 1e element de U (soit delta_c)
+gamma_delta = tf(num(5), den)         % gamma/delta
+
+G1 = gamma_delta
+Kp = 1;
+
+%13.9 = 20*log(Kp)
+
+Kp = exp(13.9/20)
+
+
+    figure('Name', 'Kp')
+    T2 = feedback(G1*Kp, 1);
+    %step(T2)
+    bode(T2)
+    margin(T2)
+    legend
+
+[num_T2,den_T2] = tfdata(T2)
+[A2,B2,C2,D2] = tf2ss(num_T2{1},den_T2{1})
 
 
 
@@ -326,5 +343,20 @@ disp(['------QUESTION m)------']);
 disp(['']);
 disp(['']);
 
+
+
+
+
+
+
+%% question n)
+disp(['------QUESTION n)------']);
+
+
+
+
+
+disp(['']);
+disp(['']);
 
 
