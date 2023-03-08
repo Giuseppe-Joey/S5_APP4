@@ -53,6 +53,7 @@ disp(['tp = ', num2str(tp(end)), ' s']);
 
 
 %% QUESTION b) - v/a_prop
+disp(['------QUESTION a)------']);
 [num,den] = ss2tf(A,B,C,D,2);   % le 2 signifie quon veut le 2e element de U soit aprop
 v_aprop = tf(num(1, :), den)         % v/aprop
 alpha_aprop = tf(num(2, :), den);         % alpha/aprop
@@ -116,6 +117,10 @@ bode(v_delta_c), grid
 
 
 
+%% QUESTION c)
+disp(['------QUESTION c)------']);
+
+
 
 
 
@@ -167,6 +172,12 @@ end
 % fprintf('Omega G: %0.2f rad/s\n', Wog);
 % fprintf('Omega P: %0.2f rad/s\n', wop);
 
+
+
+
+
+
+
 %% question g)
 disp(['------QUESTION g)------']);
 
@@ -203,6 +214,11 @@ rlocus(G_simpl)
 % hold on
 % step(G_simpl)
 
+
+
+
+
+
 %% question h)
 disp(['------QUESTION h)------']);
 Kv = 1.306;
@@ -211,6 +227,11 @@ FFFT = tf([2.122*Kv 1.465*Kv],[1 (2.122*Kv+0.028) (1.465*Kv+0.047)])
 rlocus(T)
 hold on
 rlocus(FFFT)
+
+
+
+
+
 
 %% question i)
 disp(['------QUESTION i)------']);
@@ -224,6 +245,9 @@ rlocus(FT_reduite), grid
 hold on
 rlocus(FT_originale), grid
 legend
+
+
+
 
 
 
@@ -242,6 +266,10 @@ rlocus(gamma_delta);
 
 % figure('Name', 'Bode de gamma/delta');
 % bode(gamma_delta);
+
+
+
+
 
 
 
@@ -272,9 +300,6 @@ Kp = 10^(9/20)
     [Gm,Pm,Wcg,Wcp] = margin(G1*Kp)
     Gm_dB = 20*log10(Gm)
     
-
-
-
 disp(['']);
 disp(['']);
 
@@ -287,16 +312,8 @@ disp(['']);
 %% question l)
 disp(['------QUESTION l)------']);
 
-
-
-
-
-
-
-
 disp(['']);
 disp(['']);
-
 
 
 
@@ -305,8 +322,6 @@ disp(['']);
 
 %% question m)
 disp(['------QUESTION m)------']);
-
-
 
     figure('Name', 'G1*Kp')
     T1 = feedback(G1*Kp, 1);
@@ -323,11 +338,9 @@ disp(['------QUESTION m)------']);
 
 
 
-
-
-
 disp(['']);
 disp(['']);
+
 
 
 
