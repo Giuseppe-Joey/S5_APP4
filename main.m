@@ -321,16 +321,16 @@ disp(['------QUESTION j)------']);
 % Calcul des valeurs propres du systeme
 %val_propres_A1 = eig(A1)
 
-% [num,den] = ss2tf(A1,B1,C1,D1,1);   % le 1 signifie quon veut le 1e element de U soit delta
-% gamma_delta = tf(num(5, :), den)         % gamma/delta
-% 
-% figure('Name', 'Rlocus de gamma/delta');
-% rlocus(gamma_delta);
-% 
-% figure('Name', 'Step de gamma/delta');
-% step(gamma_delta);
-% 
-% 
+[num,den] = ss2tf(A1,B1,C1,D1,1);   % le 1 signifie quon veut le 1e element de U soit delta_c
+gamma_delta = tf(num(5), den)         % gamma/delta
+
+figure('Name', 'Rlocus de gamma/delta');
+rlocus(gamma_delta);
+
+figure('Name', 'Step de gamma/delta');
+step(gamma_delta);
+
+
 % % calcul des carac temporelles
 % wn = abs(val_propres_A1);
 % zeta = -real(val_propres_A1)./wn;
