@@ -10,44 +10,13 @@
 
 % JAMAIS UN BODE AVEC UNE FTBF!!!!!!!
 
-%% MAIN CODE
+%% DEBUT DE La problematique
 clc
 close all
 clear all
 
 % Initialisation
 constantes % call le fichier des constantes
-
-
-
-%% DEBUT DE La problematique
-
-%ESSAIE #1
-%syms s
-%s=tf('s');
-
-%I = eye(4,4);
-
-%inter = (s.*I)-A;
-%inv_inter = inv(inter);
-
-%TF = C*(inv_inter*B);
-
-
-
-
-% ESSAIE #2
-% Compute the transfer function
-%[num,den] = ss2tf(A,B,C,D);
-
-% Print the transfer function
-%tf = tf(num,den)
-%disp(tf)
-
-
-
-
-
 
 
 
@@ -281,7 +250,28 @@ rlocus(gamma_delta);
 %% question k)
 disp(['------QUESTION k)------']);
 
+[num,den] = ss2tf(A1,B1,C1,D1,1);   % le 1 signifie quon veut le 1e element de U (soit delta_c)
+gamma_delta = tf(num(5), den)         % gamma/delta
 
+G1 = gamma_delta
+%Kp = 1;
+
+%13.9 = 20*log(Kp)
+
+Kp = 10^(9/20)
+
+
+    figure('Name', 'Kp')
+    %T2 = feedback(G1*Kp, 1);
+    %step(G1)
+    bode(G1*Kp)
+    margin(G1*Kp)
+    legend
+
+
+    [Gm,Pm,Wcg,Wcp] = margin(G1*Kp)
+    Gm_dB = 20*log10(Gm)
+    
 
 
 
@@ -316,24 +306,30 @@ disp(['']);
 %% question m)
 disp(['------QUESTION m)------']);
 
-[num,den] = ss2tf(A1,B1,C1,D1,1);   % le 1 signifie quon veut le 1e element de U (soit delta_c)
-gamma_delta = tf(num(5), den)         % gamma/delta
 
-G1 = gamma_delta
 
-Kp=20log(Kp)
-Kp = 1;
 
-    figure('Name', 'Kp')
-    T2 = feedback(G1*Kp, 1);
-    %step(T2)
-    bode(T2)
-    margin(T2)
+
+
+
+    figure('Name', 'G1*Kp')
+    T1 = feedback(G1*Kp, 1);
+    step(T1)
+    hold on
+%     rlocus(G)
     legend
 
-[num_T2,den_T2] = tfdata(T2)
-[A2,B2,C2,D2] = tf2ss(num_T2{1},den_T2{1})
 
+[num_T1,den_T1] = tfdata(T1)
+[A2,B2,C2,D2] = tf2ss(num_T1{1},den_T1{1})
+
+
+
+figure('Name', 'V sur Delta_C')
+rlocus(v_delta_c)
+
+figure('Name', 'V sur Delta_C')
+bode(v_delta_c), grid
 
 
 
