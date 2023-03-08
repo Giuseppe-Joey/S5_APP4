@@ -300,6 +300,11 @@ Kp = 10^(9/20)
     [Gm,Pm,Wcg,Wcp] = margin(G1*Kp)
     Gm_dB = 20*log10(Gm)
     
+
+
+
+
+
 disp(['']);
 disp(['']);
 
